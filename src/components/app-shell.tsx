@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChefHat, Home, Plus, Settings, Upload } from "lucide-react";
 import { useMemo, useState } from "react";
+import { versionHistory } from "@/lib/version-history";
 
 const navItems = [
   { href: "/", label: "Library", icon: Home },
@@ -75,6 +76,26 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </header>
 
       <main className="page-shell">{children}</main>
+
+      <footer className="mx-auto w-full max-w-7xl px-4 pb-28 sm:px-6 lg:px-8 lg:pb-8">
+        <section className="surface p-4 sm:p-5" aria-label="Version history">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase text-forest">Version history</p>
+              <p className="mt-1 text-sm font-semibold text-cocoa/75">Latest app changes and deploy notes.</p>
+            </div>
+            <div className="grid gap-3 lg:w-[680px]">
+              {versionHistory.map((item) => (
+                <div key={item.version} className="grid gap-1 rounded-lg bg-cream p-3 sm:grid-cols-[110px_130px_1fr] sm:gap-3">
+                  <span className="text-sm font-bold text-bark">v{item.version}</span>
+                  <span className="text-sm font-semibold text-forest">{item.date}</span>
+                  <span className="text-sm font-semibold text-cocoa/75">{item.note}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      </footer>
 
       <nav
         className="fixed inset-x-0 bottom-0 z-40 border-t border-tan/50 bg-ivory/95 px-2 pb-2 pt-2 shadow-[0_-12px_30px_rgba(91,61,46,0.12)] backdrop-blur lg:hidden"
