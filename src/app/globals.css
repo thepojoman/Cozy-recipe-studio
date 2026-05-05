@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-body: "Inter", "Segoe UI", system-ui, sans-serif;
+  --font-title: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  background: #fff8ea;
+}
+
+body {
+  min-height: 100%;
+  margin: 0;
+  color: #5b3d2e;
+  background:
+    linear-gradient(180deg, rgba(255, 253, 246, 0.98) 0%, rgba(255, 248, 234, 0.98) 42%, rgba(242, 230, 216, 0.96) 100%),
+    #fff8ea;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  letter-spacing: 0;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+img {
+  max-width: 100%;
+}
+
+@layer components {
+  .page-shell {
+    @apply mx-auto flex min-h-screen w-full max-w-7xl flex-col px-4 pb-24 pt-4 sm:px-6 lg:px-8 lg:pb-8;
+  }
+
+  .recipe-title {
+    @apply inline-flex max-w-full items-center rounded-2xl bg-forest px-4 py-2 font-bubble text-lg font-light leading-tight text-cream shadow-title sm:text-2xl;
+  }
+
+  .surface {
+    @apply border border-tan/45 bg-ivory/90 shadow-soft;
+    border-radius: 8px;
+  }
+
+  .tap-button {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-forest/40 focus:ring-offset-2 focus:ring-offset-cream disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .primary-button {
+    @apply tap-button bg-bark text-cream hover:bg-cocoa;
+  }
+
+  .secondary-button {
+    @apply tap-button border border-tan/70 bg-ivory text-cocoa hover:bg-sage/30;
+  }
+
+  .soft-input {
+    @apply min-h-11 w-full rounded-lg border border-tan/60 bg-ivory px-3 py-2 text-cocoa outline-none transition placeholder:text-cocoa/45 focus:border-forest focus:ring-2 focus:ring-forest/20;
+  }
+
+  .chip {
+    @apply inline-flex min-h-9 items-center rounded-full border border-tan/60 bg-cream px-3 py-1 text-xs font-semibold text-cocoa;
+  }
+
+  .icon-button {
+    @apply inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-tan/60 bg-ivory text-cocoa transition hover:bg-sage/30 focus:outline-none focus:ring-2 focus:ring-forest/35;
+  }
+}
