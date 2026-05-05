@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Camera, ChefHat, Home, Plus, Settings, Upload } from "lucide-react";
+import { ChefHat, Home, Plus, Settings, Upload } from "lucide-react";
 import { useMemo, useState } from "react";
 
 const navItems = [
@@ -71,9 +71,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             })}
           </nav>
 
-          <Link href="/upload" className="icon-button" aria-label="Upload a recipe screenshot">
-            <Camera size={19} aria-hidden />
-          </Link>
         </div>
       </header>
 
