@@ -1,5 +1,10 @@
 export const versionHistory = [
   {
+    version: "0.4.0",
+    date: "May 5, 2026",
+    note: "Added ingredient and special tool prep checklists to the recipe detail page."
+  },
+  {
     version: "0.3.0",
     date: "May 5, 2026",
     note: "Removed duplicate upload shortcut and added multi-photo recipe uploads."
