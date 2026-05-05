@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Camera, Clock, Pencil, Play, Save, Trash2, Upload } from "lucide-react";
+import { Camera, Check, Clock, Pencil, Play, Save, Trash2, Upload } from "lucide-react";
 import { useEffect, useState } from "react";
 import { EmptyState } from "@/components/empty-state";
 import { createId } from "@/lib/id";
@@ -20,6 +20,7 @@ export function RecipeDetailClient({ id }: { id: string }) {
   const [actualNotes, setActualNotes] = useState("");
   const [status, setStatus] = useState("");
   const [uploadError, setUploadError] = useState("");
+  const [prepChecked, setPrepChecked] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     let active = true;
@@ -30,6 +31,7 @@ export function RecipeDetailClient({ id }: { id: string }) {
       setRecipe(foundRecipe);
       setActualTime(foundRecipe?.actualTotalTimeMinutes ? String(foundRecipe.actualTotalTimeMinutes) : "");
       setActualNotes(foundRecipe?.actualTimeNotes ?? "");
+      setPrepChecked(foundRecipe ? readPrepChecklist(foundRecipe.id) : {});
       setLoading(false);
     }
 
@@ -105,6 +107,19 @@ export function RecipeDetailClient({ id }: { id: string }) {
 
     await removeRecipe(recipe.id);
     router.push("/");
+  }
+
+  function togglePrepCheck(itemId: string) {
+    if (!recipe) return;
+
+    setPrepChecked((current) => {
+      const next = {
+        ...current,
+        [itemId]: !current[itemId]
+      };
+      window.localStorage.setItem(prepChecklistStorageKey(recipe.id), JSON.stringify(next));
+      return next;
+    });
   }
 
   if (loading) {
@@ -201,8 +216,25 @@ export function RecipeDetailClient({ id }: { id: string }) {
       </section>
 
       <section className="grid gap-4 lg:grid-cols-3">
-        <RecipeList title="Ingredients" items={recipe.ingredients.map(displayIngredient)} />
-        <RecipeList title="Equipment" items={recipe.equipment.map((item) => item.name)} />
+        <PrepChecklist
+          title="Ingredients"
+          items={recipe.ingredients.map((ingredient) => ({
+            id: `ingredient-${ingredient.id}`,
+            label: displayIngredient(ingredient)
+          }))}
+          checked={prepChecked}
+          onToggle={togglePrepCheck}
+        />
+        <PrepChecklist
+          title="Special tools"
+          items={recipe.equipment.map((item) => ({
+            id: `equipment-${item.id}`,
+            label: item.name,
+            detail: item.notes
+          }))}
+          checked={prepChecked}
+          onToggle={togglePrepCheck}
+        />
         <RecipeList title="Instructions" items={recipe.instructions.map((instruction) => `${instruction.stepNumber}. ${instruction.text}`)} />
       </section>
 
@@ -240,6 +272,19 @@ export function RecipeDetailClient({ id }: { id: string }) {
   );
 }
 
+function prepChecklistStorageKey(recipeId: string) {
+  return `cozy_recipe_detail_prep_${recipeId}`;
+}
+
+function readPrepChecklist(recipeId: string): Record<string, boolean> {
+  try {
+    const stored = window.localStorage.getItem(prepChecklistStorageKey(recipeId));
+    return stored ? (JSON.parse(stored) as Record<string, boolean>) : {};
+  } catch {
+    return {};
+  }
+}
+
 function TimeStat({ label, value }: { label: string; value: string }) {
   return (
     <div className="surface flex min-h-20 flex-col justify-center p-4">
@@ -267,6 +312,46 @@ function RecipeList({ title, items }: { title: string; items: string[] }) {
           <li className="rounded-lg bg-cream px-3 py-3 text-sm font-semibold text-cocoa/70">Nothing saved.</li>
         )}
       </ul>
+    </div>
+  );
+}
+
+function PrepChecklist({
+  title,
+  items,
+  checked,
+  onToggle
+}: {
+  title: string;
+  items: Array<{ id: string; label: string; detail?: string }>;
+  checked: Record<string, boolean>;
+  onToggle: (id: string) => void;
+}) {
+  return (
+    <div className="surface p-4 sm:p-6">
+      <h2 className="mb-4 text-xl font-semibold text-bark">{title}</h2>
+      <div className="space-y-3">
+        {items.length > 0 ? (
+          items.map((item) => (
+            <label key={item.id} className="flex min-h-14 cursor-pointer items-start gap-3 rounded-lg bg-cream p-3 text-sm font-semibold text-cocoa">
+              <span
+                className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border ${
+                  checked[item.id] ? "border-forest bg-forest text-cream" : "border-tan bg-ivory"
+                }`}
+              >
+                {checked[item.id] && <Check size={16} aria-hidden />}
+              </span>
+              <input className="sr-only" type="checkbox" checked={Boolean(checked[item.id])} onChange={() => onToggle(item.id)} />
+              <span className={checked[item.id] ? "text-cocoa/55 line-through" : ""}>
+                {item.label}
+                {item.detail && <span className="mt-1 block text-xs font-semibold text-cocoa/55">{item.detail}</span>}
+              </span>
+            </label>
+          ))
+        ) : (
+          <p className="rounded-lg bg-cream px-3 py-3 text-sm font-semibold text-cocoa/70">Nothing saved.</p>
+        )}
+      </div>
     </div>
   );
 }
